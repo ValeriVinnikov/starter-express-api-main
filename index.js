@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose'); //Package used to work with MongoDB Atlas database
-const bodyParser = require('body-parser') //Package used to work with web service body
+//const bodyParser = require('body-parser') //Package used to work with web service body
 
 const app = express()
 app.use(express.json())

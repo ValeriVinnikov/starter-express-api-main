@@ -45,13 +45,14 @@ ClientsPost = mongoose.model('ClientsPost', ClientsPostSchema, 'clients');
 app.post('/api/findClientByTelNumber', (req, res) => {
     console.log("/api/findClientByTelNumber");
     console.log("Find client by calling number");
+    console.log(req);
     var callingNumber = req.body.callingNumber;
     console.log("callingNumber = " + callingNumber);
     ClientsPost.findOne({ phoneNumber: callingNumber })
         .then((data) => {
-            console.log("First name: " + data.firstName);
-            console.log("Last name: " + data.lastName);
-            console.log("Email: " + data.email);
+            //console.log("First name: " + data.firstName);
+            //console.log("Last name: " + data.lastName);
+            //console.log("Email: " + data.email);
             res.json(data);
         })
         .catch((error) => {

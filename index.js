@@ -67,3 +67,54 @@ app.post('/api/findClientByTelNumber', (req, res) => {
             console.log('error', error);
         });
 });
+
+app.post('/api/insertClient', function (req, res) {
+    console.log("Post /api/insertClient");
+    var phoneNumber = req.body.phoneNumber;
+    var firstName = req.body.firstName;
+    var lastName = req.body.lastName;
+    var clientId = req.body.clientId;
+    var email = req.body.email;
+    var country = req.body.country;
+    var postCode = req.body.postCode;
+    var city = req.body.city;
+    var street = req.body.street;
+    var birthday = req.body.birthday;
+    var gender = req.body.gender;
+
+    const client = {
+        phoneNumber: phoneNumber,
+        firstName: firstName,
+        lastName: lastName,
+        clientId: clientId,
+        email: email,
+        country: country,
+        postCode: postCode,
+        city: city,
+        street: street,
+        birthday: birthday,
+        gender: gender
+    }
+    insertClient(client);
+    res.end("OK");
+});
+
+async function insertClient(client) {
+    //This function will insert client in collection "clients" 
+    console.log("FUNCTION: insertClient(client)");
+    //Output values of termin properties in console for debugging
+    console.log("client.clientId = " + client.clientId);
+    console.log("client.firstName = " + client.firstName);
+    console.log("client.lastName = " + client.lastName);
+    //make instance of client
+    const newClientsPost = new ClientsPost(client);
+    console.log('Trying to insert new client in clients collection');
+    newClientsPost.save((error) => {
+        if (error) {
+            console.log('Error happend when tried to save client in clients collection. Error: ' + error);
+        }
+        else {
+            console.log('Saved new client in client collection');
+        }
+    });
+}

@@ -114,7 +114,7 @@ async function insertClient(client) {
             console.log('Error happend when tried to save client in clients collection. Error: ' + error);
         }
         else {
-            console.log('Saved new client in client collection');
+            console.log('Saved new client in client collection of Atlas DB');
         }
     });
 }

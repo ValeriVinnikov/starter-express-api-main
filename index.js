@@ -36,8 +36,7 @@ ClientsPostSchema = new ClientsSchema({
     city: String,
     street: String,
     birthday: String,
-    gender: String,
-    country: String
+    gender: String    
 });
 
 // Define Clients model

@@ -17,8 +17,7 @@ const MONGODB_URI = 'mongodb+srv://dbuser:$Rainbow1@cluster0.ooeal.mongodb.net/<
 mongoose.set('strictQuery', false);
 
 //Connect to MongoDb
-mongoose.connect(MONGODB_URI).then(()=>
-{
+mongoose.connect(MONGODB_URI).then(() => {
     console.log('MongoDB is connected!!!!')
 })
 
@@ -73,16 +72,14 @@ app.post('/api/findClientByTelNumber', (req, res) => {
     console.log("callingNumber = " + callingNumber);
     ClientsPost.findOne({ phoneNumber: callingNumber })
         .then((data) => {
-            if (data != null)
-            {
+            if (data != null) {
                 console.log("First name: " + data.firstName);
                 console.log("Last name: " + data.lastName);
                 console.log("Email: " + data.email);
             }
-            else
-            {
+            else {
                 console.log("Not found");
-            }            
+            }
             res.json(data);
         })
         .catch((error) => {
@@ -159,20 +156,20 @@ app.post('/api/saveCallData', function (req, res) {
     var number = req.body.number;
 
     const callData = {
-        call_reference : call_reference,
-        clientId : clientId,
-        call_start : call_start,
-        call_end : call_end,
-        pilot_number : pilot_number,
-        pg_number : pg_number,
-        agent_number : agent_number,
-        waiting_time : waiting_time,
-        call_reason : call_reason,
-        first_call_resolution : first_call_resolution,
-        talk_time : talk_time,
-        call_type : call_type,
-        note : note,
-        number : number
+        call_reference: call_reference,
+        clientId: clientId,
+        call_start: call_start,
+        call_end: call_end,
+        pilot_number: pilot_number,
+        pg_number: pg_number,
+        agent_number: agent_number,
+        waiting_time: waiting_time,
+        call_reason: call_reason,
+        first_call_resolution: first_call_resolution,
+        talk_time: talk_time,
+        call_type: call_type,
+        note: note,
+        number: number
     }
     InsertNewCallData(callData);
     res.end("OK");
@@ -203,88 +200,133 @@ app.get('/api/calls', (req, res) => {
     var agent_number = req.query.agent_number;
     var pg_number = req.query.pg_number;
     var call_type = req.query.call_type;
-    if (agent_number != "all" && pg_number ==="all" && call_type === "all") {
-        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { agent_number: agent_number }] })        
+    //ONLY AGENT
+    if (agent_number != "all" && pg_number === "all" && call_type === "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) } }, { agent_number: agent_number }] })
             .then((data) => {
+                if (data != null) {
+                    console.log(data.length + " call(s) found");
+                }
+                else {
+                    console.log("No calls found");
+                }
                 res.json(data);
-                console.log('Res: ', res);
             })
             .catch((error) => {
                 console.log('error', error);
             });
     }
-    else if (agent_number === "all" && pg_number ==="all" && call_type != "all") {
-        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { call_type: call_type }] }) 
+    //ONLY CALL Type
+    else if (agent_number === "all" && pg_number === "all" && call_type != "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) } }, { call_type: call_type }] })
 
             .then((data) => {
+                if (data != null) {
+                    console.log(data.length + " call(s) found");
+                }
+                else {
+                    console.log("No calls found");
+                }
                 res.json(data);
-                console.log('Res: ', res);
             })
             .catch((error) => {
                 console.log('error', error);
             });
 
-    }  
-    else if (agent_number != "all" && pg_number !="all" && call_type === "all") {
-        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { agent_number: agent_number }, { pg_number: pg_number }] }) 
-            .then((data) => {
-                res.json(data);
-                console.log('Res: ', res);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
     }
-    else if (agent_number != "all" && pg_number !="all" && call_type != "all") {
-        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { agent_number: agent_number }, { pg_number: pg_number }, { call_type: call_type }] }) 
+    //AGENT anf PG
+    else if (agent_number != "all" && pg_number != "all" && call_type === "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) } }, { agent_number: agent_number }, { pg_number: pg_number }] })
+        .then((data) => {
+            if (data != null) {
+                console.log(data.length + " call(s) found");
+            }
+            else {
+                console.log("No calls found");
+            }
+            res.json(data);
+        })
+        .catch((error) => {
+            console.log('error', error);
+        });
+    }
 
-            .then((data) => {
-                res.json(data);
-                console.log('Res: ', res);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
+    //AGENT, PG, CALL type
+    else if (agent_number != "all" && pg_number != "all" && call_type != "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) } }, { agent_number: agent_number }, { pg_number: pg_number }, { call_type: call_type }] })
 
-    } 
-    else if (agent_number === "all" && pg_number !="all" && call_type != "all") {
-        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { pg_number: pg_number }, { call_type: call_type }] }) 
+        .then((data) => {
+            if (data != null) {
+                console.log(data.length + " call(s) found");
+            }
+            else {
+                console.log("No calls found");
+            }
+            res.json(data);
+        })
+        .catch((error) => {
+            console.log('error', error);
+        });
 
-            .then((data) => {
-                res.json(data);
-                console.log('Res: ', res);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
+    }
 
-    } 
-    else if (agent_number === "all" && pg_number ==="all" && call_type === "all") {
-        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}] }) 
+    //PG and CALL Type
+    else if (agent_number === "all" && pg_number != "all" && call_type != "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) } }, { pg_number: pg_number }, { call_type: call_type }] })
 
-            .then((data) => {
-                res.json(data);
-                console.log('Res: ', res);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
+        .then((data) => {
+            if (data != null) {
+                console.log(data.length + " call(s) found");
+            }
+            else {
+                console.log("No calls found");
+            }
+            res.json(data);
+        })
+        .catch((error) => {
+            console.log('error', error);
+        });
 
-    }  
+    }
+
+    //ALL Calls
+    else if (agent_number === "all" && pg_number === "all" && call_type === "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) } }] })
+
+        .then((data) => {
+            if (data != null) {
+                console.log(data.length + " call(s) found");
+            }
+            else {
+                console.log("No calls found");
+            }
+            res.json(data);
+        })
+        .catch((error) => {
+            console.log('error', error);
+        });
+
+    }
     // ONLY PG Number
-    else if (agent_number === "all" && pg_number !="all" && call_type === "all") {
-        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { pg_number: pg_number }] }) 
+    else if (agent_number === "all" && pg_number != "all" && call_type === "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) } }, { pg_number: pg_number }] })
 
-            .then((data) => {
-                res.json(data);
-                console.log('Res: ', res);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
+        
+        .then((data) => {
+            if (data != null) {
+                console.log(data.length + " call(s) found");
+            }
+            else {
+                console.log("No calls found");
+            }
+            res.json(data);
+        })
+        .catch((error) => {
+            console.log('error', error);
+        });
 
-    }    
-    // ONLY Call type
+    }
     
+
 
 });

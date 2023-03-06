@@ -259,6 +259,18 @@ app.get('/api/calls', (req, res) => {
             });
 
     } 
+    else if (agent_number === "all" && pg_number ==="all" && call_type === "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}] }) 
+
+            .then((data) => {
+                res.json(data);
+                console.log('Res: ', res);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            });
+
+    }  
     // ONLY PG Number
     else if (agent_number === "all" && pg_number !="all" && call_type === "all") {
         CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { pg_number: pg_number }] }) 

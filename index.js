@@ -36,11 +36,34 @@ ClientsPostSchema = new ClientsSchema({
     city: String,
     street: String,
     birthday: String,
-    gender: String    
+    gender: String,
+    country: String
 });
+
+//Define callData Schema
+const Schema = mongoose.Schema;
+CallDataPostSchema = new Schema({
+    call_reference: String,
+    clientId: String,
+    call_start: Number,
+    call_end: Number,
+    pilot_number: String,
+    pg_number: String,
+    agent_number: String,
+    waiting_time: Number,
+    call_reason: String,
+    first_call_resolution: Number,
+    talk_time: Number,
+    call_type: String,
+    note: String,
+    number: String,
+});
+
 
 // Define Clients model
 ClientsPost = mongoose.model('ClientsPost', ClientsPostSchema, 'clients');
+// Define callData model
+CallDataPost = mongoose.model('CallDataPost', CallDataPostSchema, 'calls');
 
 // Web service find caller data by calling number
 app.post('/api/findClientByTelNumber', (req, res) => {
@@ -113,7 +136,143 @@ async function insertClient(client) {
             console.log('Error happend when tried to save client in clients collection. Error: ' + error);
         }
         else {
-            console.log('Saved new client in client collection of Atlas DB');
+            console.log('Saved new client in client collection');
         }
     });
 }
+
+app.post('/api/saveCallData', function (req, res) {
+    console.log("Post /api/saveCallData");
+    var call_reference = req.body.call_reference;
+    var clientId = req.body.clientId;
+    var call_start = req.body.call_start;
+    var call_end = req.body.call_end;
+    var pilot_number = req.body.pilot_number;
+    var pg_number = req.body.pg_number;
+    var agent_number = req.body.agent_number;
+    var waiting_time = req.body.waiting_time;
+    var call_reason = req.body.call_reason;
+    var first_call_resolution = req.body.first_call_resolution;
+    var talk_time = req.body.talk_time;
+    var call_type = req.body.call_type;
+    var note = req.body.note;
+    var number = req.body.number;
+
+    const callData = {
+        call_reference : call_reference,
+        clientId : clientId,
+        call_start : call_start,
+        call_end : call_end,
+        pilot_number : pilot_number,
+        pg_number : pg_number,
+        agent_number : agent_number,
+        waiting_time : waiting_time,
+        call_reason : call_reason,
+        first_call_resolution : first_call_resolution,
+        talk_time : talk_time,
+        call_type : call_type,
+        note : note,
+        number : number
+    }
+    InsertNewCallData(callData);
+    res.end("OK");
+
+
+});
+async function InsertNewCallData(callData) {
+    //This function will insert new callData in collection "calls" 
+    console.log("FUNCTION: InsertNewCallData(callData)");
+    //make instance of callback
+    const callDataPost = new CallDataPost(callData);
+    console.log('Trying to save new CallData in collection calls');
+    callDataPost.save((error) => {
+        if (error) {
+            console.log('Error happend when tried to save CallData in collection calls. Error: ' + error);
+        }
+        else {
+            console.log('Saved CallData in collection calls');
+        }
+    });
+}
+
+app.get('/api/calls', (req, res) => {
+    console.log("/api/calls");
+    console.log("Get information about calls");
+    var startTime = req.query.startTime;
+    var endTime = req.query.endTime;
+    var agent_number = req.query.agent_number;
+    var pg_number = req.query.pg_number;
+    var call_type = req.query.call_type;
+    if (agent_number != "all" && pg_number ==="all" && call_type === "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { agent_number: agent_number }] })        
+            .then((data) => {
+                res.json(data);
+                console.log('Res: ', res);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            });
+    }
+    else if (agent_number === "all" && pg_number ==="all" && call_type != "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { call_type: call_type }] }) 
+
+            .then((data) => {
+                res.json(data);
+                console.log('Res: ', res);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            });
+
+    }  
+    else if (agent_number != "all" && pg_number !="all" && call_type === "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { agent_number: agent_number }, { pg_number: pg_number }] }) 
+            .then((data) => {
+                res.json(data);
+                console.log('Res: ', res);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            });
+    }
+    else if (agent_number != "all" && pg_number !="all" && call_type != "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { agent_number: agent_number }, { pg_number: pg_number }, { call_type: call_type }] }) 
+
+            .then((data) => {
+                res.json(data);
+                console.log('Res: ', res);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            });
+
+    } 
+    else if (agent_number === "all" && pg_number !="all" && call_type != "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { pg_number: pg_number }, { call_type: call_type }] }) 
+
+            .then((data) => {
+                res.json(data);
+                console.log('Res: ', res);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            });
+
+    } 
+    // ONLY PG Number
+    else if (agent_number === "all" && pg_number !="all" && call_type === "all") {
+        CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) }}, { pg_number: pg_number }] }) 
+
+            .then((data) => {
+                res.json(data);
+                console.log('Res: ', res);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            });
+
+    }    
+    // ONLY Call type
+    
+
+});

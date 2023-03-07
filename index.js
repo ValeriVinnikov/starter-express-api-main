@@ -51,7 +51,7 @@ CallDataPostSchema = new Schema({
     agent_number: String,
     waiting_time: Number,
     call_reason: String,
-    first_call_resolution: Number,
+    first_call_resolution: String,
     talk_time: Number,
     call_type: String,
     note: String,
@@ -311,7 +311,7 @@ app.get('/api/calls', (req, res) => {
     else if (agent_number === "all" && pg_number != "all" && call_type === "all") {
         CallDataPost.find({ $and: [{ call_start: { $gte: parseInt(startTime) } }, { call_end: { $lte: parseInt(endTime) } }, { pg_number: pg_number }] })
 
-        
+
         .then((data) => {
             if (data != null) {
                 console.log(data.length + " call(s) found");

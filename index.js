@@ -126,9 +126,10 @@ app.post('/api/geoPosition', function (req, res) {
     var userId = req.body.userId;   
 
     const geoLocation = {
-        phoneNumber: phoneNumber,
-        firstName: firstName,
-        lastName: lastName
+        longitude: longitude,
+        latitude: latitude,
+        userName: userName,
+        userId: userId
     }
     //insertClient(client);
     res.end("OK");

@@ -118,6 +118,22 @@ app.post('/api/insertClient', function (req, res) {
     res.end("OK");
 });
 
+app.post('/api/geoPosition', function (req, res) {
+    console.log("Post /api/saveLocation");
+    var longitude = req.body.longitude;
+    var latitude = req.body.latitude;
+    var userName = req.body.userName;
+    var userId = req.body.userId;   
+
+    const geoLocation = {
+        phoneNumber: phoneNumber,
+        firstName: firstName,
+        lastName: lastName
+    }
+    //insertClient(client);
+    res.end("OK");
+});
+
 async function insertClient(client) {
     //This function will insert client in collection "clients" 
     console.log("FUNCTION: insertClient(client)");

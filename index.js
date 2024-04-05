@@ -125,10 +125,10 @@ app.post('/api/geoPosition', function (req, res) {
     var userId = req.body.userId; 
     
     console.log("Post /api/geoPosition");
-    console.log("longitude" + longitude);
-    console.log("latitude" + latitude);
-    console.log("userName" + userName);
-     console.log("userId" + userId);
+    console.log("longitude: " + longitude);
+    console.log("latitude: " + latitude);
+    console.log("userName: " + userName);
+     console.log("userId: " + userId);
     const geoLocation = {
         longitude: longitude,
         latitude: latitude,
